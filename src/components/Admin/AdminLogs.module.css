@@ -1,0 +1,77 @@
+.empty {
+  padding: 24px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px;
+}
+
+.entry {
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--bg-tertiary);
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.badge.remove {
+  background: rgba(251, 146, 60, 0.15);
+  color: #fb923c;
+}
+
+.badge.kick {
+  background: rgba(248, 113, 113, 0.15);
+  color: var(--error-color);
+}
+
+.badge.mute {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--mute-color);
+}
+
+.time {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.actor {
+  color: var(--text-secondary);
+}
+
+.arrow {
+  color: var(--text-muted);
+}
+
+.target {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.extra {
+  color: var(--text-muted);
+}

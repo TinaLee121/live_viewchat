@@ -1,0 +1,23 @@
+.bar {
+  width: 100%;
+  padding: 6px 16px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  animation: slideDown 0.3s ease;
+}
+
+.offline {
+  background: var(--error-color);
+  color: #fff;
+}
+
+.reconnected {
+  background: var(--success-color);
+  color: #fff;
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}

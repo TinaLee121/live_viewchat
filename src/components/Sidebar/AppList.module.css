@@ -1,0 +1,52 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+}
+
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 4px 8px 8px;
+}
+
+.appItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.appItem:hover {
+  background: var(--bg-hover);
+}
+
+.appItem.expanded {
+  background: var(--bg-hover);
+}
+
+.chevron {
+  color: var(--text-muted);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.open {
+  transform: rotate(90deg);
+}
+
+.appName {
+  font-size: 14px;
+  color: var(--text-primary);
+  font-weight: 500;
+  white-space: normal;
+  word-break: break-word;
+}

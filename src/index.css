@@ -1,0 +1,133 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg-primary: #0d0f18;
+  --bg-secondary: #13151f;
+  --bg-tertiary: #1a1c2a;
+  --bg-hover: #1e2030;
+  --text-primary: #e8eaf0;
+  --text-secondary: #8b8fa8;
+  --text-muted: #4a4e68;
+  --border: #1e2235;
+  --accent-streamer: #0ea5e9;
+  --accent-admin: #7c6af7;
+  --accent-user: #8b8fa8;
+  --badge-streamer-bg: rgba(14, 165, 233, 0.15);
+  --badge-streamer-border: rgba(14, 165, 233, 0.4);
+  --mute-color: #fbbf24;
+  --ping-good: #4ade80;
+  --ping-mid: #fbbf24;
+  --ping-bad: #f87171;
+  --msg-bg: transparent;
+  --msg-bg-hover: #1a1c2a;
+  --msg-removed-bg: transparent;
+  --msg-removed-text: #4a4e68;
+  --input-bg: #1a1c2a;
+  --input-border: #2a2d3e;
+  --sidebar-bg: #10121e;
+  --sidebar-width: 280px;
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+  --pinned-bg: #1a1d30;
+  --pinned-border: #7c6af7;
+  --error-color: #f87171;
+  --success-color: #4ade80;
+  --warning-color: #fbbf24;
+  --msg-font-size: 14px;
+  --scrollbar-thumb: #2a2d3e;
+  --scrollbar-track: transparent;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f0f1f8;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #e8eaf5;
+  --bg-hover: #dde0f0;
+  --text-primary: #1a1c2e;
+  --text-secondary: #555870;
+  --text-muted: #9ea3bf;
+  --border: #d4d7ec;
+  --accent-streamer: #0284c7;
+  --badge-streamer-bg: rgba(2, 132, 199, 0.15);
+  --badge-streamer-border: rgba(2, 132, 199, 0.4);
+  --accent-admin: #5b4de0;
+  --accent-user: #555870;
+  --msg-bg: transparent;
+  --msg-bg-hover: #e8eaf5;
+  --msg-removed-bg: transparent;
+  --msg-removed-text: #aaa;
+  --input-bg: #ffffff;
+  --input-border: #c8cbe0;
+  --sidebar-bg: #e8eaf5;
+  --overlay-bg: rgba(0, 0, 0, 0.4);
+  --pinned-bg: #ede9ff;
+  --pinned-border: #5b4de0;
+  --scrollbar-thumb: #c0c3d8;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+input, textarea {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+@keyframes msgEnter {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
