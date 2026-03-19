@@ -5,15 +5,6 @@
   padding: 8px;
 }
 
-.sectionLabel {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 4px 8px 8px;
-}
-
 .appItem {
   display: flex;
   align-items: center;
@@ -37,6 +28,8 @@
   color: var(--text-muted);
   flex-shrink: 0;
   transition: transform 0.2s ease;
+  width: calc(14px * var(--font-scale, 1));
+  height: calc(14px * var(--font-scale, 1));
 }
 
 .open {
@@ -44,9 +37,29 @@
 }
 
 .appName {
-  font-size: 14px;
+  font-size: calc(14px * var(--font-scale, 1));
   color: var(--text-primary);
   font-weight: 500;
   white-space: normal;
   word-break: break-word;
+  flex: 1;
+}
+
+:global([data-theme="light"]) .appName {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.liveBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--error-color);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 4px;
+  padding: 1px 6px;
+  font-size: calc(11px * var(--font-scale, 1));
+  font-weight: 600;
+  flex-shrink: 0;
 }

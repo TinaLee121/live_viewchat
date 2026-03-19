@@ -98,3 +98,27 @@
   background: var(--bg-hover);
   color: var(--text-primary);
 }
+
+.unreadDivider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  flex-shrink: 0;
+}
+
+.unreadDivider::before,
+.unreadDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #E8001C;
+  opacity: 0.35;
+}
+
+.unreadLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: #E8001C;
+  white-space: nowrap;
+}

@@ -1,23 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
-import { Sun, Moon, Radio, Menu, Settings2 } from 'lucide-react';
+import { Sun, Moon, Menu, ALargeSmall, LogOut, ScrollText } from 'lucide-react';
+import ConfirmModal from '../Modals/ConfirmModal';
 import { useTheme } from '../../context/ThemeContext';
 import FontSizeControl from '../Controls/FontSizeControl';
 import styles from './Header.module.css';
 
-function PingDot({ ping }) {
-  if (ping === null) return null;
-  const cls = ping < 100 ? styles.pingGood : ping < 300 ? styles.pingMid : styles.pingBad;
-  return (
-    <div className={`${styles.ping} ${cls}`} title={`延遲 ${ping}ms`}>
-      <span className={styles.pingDot} />
-      <span className={styles.pingMs}>{ping}ms</span>
-    </div>
-  );
-}
 
-export default function Header({ onEndLive, onToggleSidebar, ping }) {
+export default function Header({ onToggleSidebar, onMenuMouseEnter, onMenuMouseLeave, onLogout, showLogsPanel, onToggleLogs, unreadLogsCount = 0, currentStream }) {
   const { theme, toggleTheme } = useTheme();
   const [showSettings, setShowSettings] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const settingsRef = useRef(null);
 
   useEffect(() => {
@@ -35,24 +27,30 @@ export default function Header({ onEndLive, onToggleSidebar, ping }) {
     <div className={styles.headerWrapper} ref={settingsRef}>
       <header className={styles.header}>
         <div className={styles.left}>
-          <button className={styles.menuBtn} onClick={onToggleSidebar} title="切換側邊欄">
+          <button
+            className={styles.menuBtn}
+            onClick={onToggleSidebar}
+            onMouseEnter={onMenuMouseEnter}
+            onMouseLeave={onMenuMouseLeave}
+            title="切換側邊欄"
+          >
             <Menu size={20} />
           </button>
-          <div className={styles.liveBadge}>
-            <span className={styles.liveDot} />
-            直播中
+          <div className={styles.titleGroup}>
+            <span className={styles.title}>CMoney 直播管理台</span>
+            {currentStream && (
+              <span className={styles.streamTitle}>{currentStream.title}</span>
+            )}
           </div>
-          <span className={styles.title}>CMoney 直播管理台</span>
         </div>
 
         <div className={styles.right}>
-          <PingDot ping={ping} />
           <button
             className={`${styles.iconBtn} ${showSettings ? styles.active : ''}`}
             onClick={() => setShowSettings(p => !p)}
-            title="設定"
+            title="字體大小"
           >
-            <Settings2 size={18} />
+            <ALargeSmall size={18} />
           </button>
           <button
             className={styles.iconBtn}
@@ -61,9 +59,24 @@ export default function Header({ onEndLive, onToggleSidebar, ping }) {
           >
             {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </button>
-          <button className={styles.endLiveBtn} onClick={onEndLive}>
-            <Radio size={15} />
-            關閉直播
+          <div className={styles.logsBtnWrapper}>
+            <button
+              className={`${styles.iconBtn} ${showLogsPanel ? styles.active : ''}`}
+              onClick={onToggleLogs}
+              title="管理日誌"
+            >
+              <ScrollText size={18} />
+            </button>
+            {unreadLogsCount > 0 && (
+              <span className={styles.badge}>{unreadLogsCount > 99 ? '99+' : unreadLogsCount}</span>
+            )}
+          </div>
+          <button
+            className={styles.logoutBtn}
+            onClick={() => setShowLogoutModal(true)}
+          >
+            <LogOut size={16} />
+            <span>登出</span>
           </button>
         </div>
       </header>
@@ -72,6 +85,15 @@ export default function Header({ onEndLive, onToggleSidebar, ping }) {
         <div className={styles.settingsPanel}>
           <FontSizeControl />
         </div>
+      )}
+
+      {showLogoutModal && (
+        <ConfirmModal
+          title="登出"
+          message="確定要登出嗎？"
+          onConfirm={() => { setShowLogoutModal(false); onLogout(); }}
+          onCancel={() => setShowLogoutModal(false)}
+        />
       )}
     </div>
   );

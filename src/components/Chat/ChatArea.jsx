@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import { useRef, useEffect, useState, useCallback, Fragment } from 'react';
 import { ChevronDown, Loader } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import { historyMessages, nextMsgId } from '../../data/mockData';
@@ -11,16 +11,19 @@ const HISTORY_TRIGGER = 60;
 export default function ChatArea() {
   const {
     messages, pinnedMessage, fontSize, isSyncing,
-    removeMessage, kickUser, muteUser, pinMessage, retryMessage,
-    prependMessages, mutedUsers, trimOldMessages,
+    removeMessage, hideUser, pinMessage, retryMessage,
+    prependMessages, trimOldMessages,
   } = useChat();
 
   const containerRef = useRef(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [newCount, setNewCount] = useState(0);
+  const [firstUnreadId, setFirstUnreadId] = useState(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [historyLoaded, setHistoryLoaded] = useState(false);
   const prevScrollHeight = useRef(0);
+  const wasAtBottomRef = useRef(true);
+  const unreadDividerRef = useRef(null);
 
   // Auto-scroll to bottom when new messages arrive and user is at bottom
   useEffect(() => {
@@ -33,6 +36,7 @@ export default function ChatArea() {
       if (messages.length > 500) trimOldMessages();
     } else {
       setNewCount(prev => prev + 1);
+      setFirstUnreadId(prev => prev ?? messages[messages.length - 1]?.id ?? null);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages.length]);
@@ -42,6 +46,13 @@ export default function ChatArea() {
     if (!el) return;
     const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
     const atBottom = distFromBottom < BOTTOM_THRESHOLD;
+
+    // New session: user scrolled up from bottom → clear previous unread divider
+    if (!atBottom && wasAtBottomRef.current) {
+      setFirstUnreadId(null);
+    }
+    wasAtBottomRef.current = atBottom;
+
     setIsAtBottom(atBottom);
     if (atBottom) setNewCount(0);
 
@@ -79,6 +90,15 @@ export default function ChatArea() {
     }
   };
 
+  const scrollToUnread = () => {
+    if (unreadDividerRef.current) {
+      unreadDividerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setNewCount(0);
+    } else {
+      scrollToBottom();
+    }
+  };
+
   return (
     <div className={styles.wrapper}>
       {isLoadingHistory && (
@@ -100,27 +120,28 @@ export default function ChatArea() {
           </div>
         )}
 
-        {messages.map(msg => {
-          const muteUntil = mutedUsers[msg.userId];
-          return (
+        {messages.filter(msg => !msg.hidden).map(msg => (
+          <Fragment key={msg.id}>
+            {firstUnreadId === msg.id && (
+              <div ref={unreadDividerRef} className={styles.unreadDivider}>
+                <span className={styles.unreadLabel}>以下為未讀訊息</span>
+              </div>
+            )}
             <MessageBubble
-              key={msg.id}
               message={msg}
               fontSize={fontSize}
               onRemove={removeMessage}
-              onKick={kickUser}
-              onMute={muteUser}
+              onHide={hideUser}
               onPin={pinMessage}
               onRetry={retryMessage}
               isPinned={pinnedMessage?.id === msg.id}
-              muteUntil={muteUntil && muteUntil > Date.now() ? muteUntil : null}
             />
-          );
-        })}
+          </Fragment>
+        ))}
       </div>
 
       {!isAtBottom && newCount > 0 && (
-        <button className={styles.newMsgBtn} onClick={scrollToBottom}>
+        <button className={styles.newMsgBtn} onClick={scrollToUnread}>
           <ChevronDown size={15} />
           {newCount} 則新訊息
         </button>

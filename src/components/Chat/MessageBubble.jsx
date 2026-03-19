@@ -1,8 +1,7 @@
-import { useState, useEffect, useRef } from 'react';
-import { Trash2, UserX, Pin, PinOff, RotateCcw, VolumeX } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { Trash2, UserX, Pin, PinOff, RotateCcw } from 'lucide-react';
 import { users, CURRENT_USER_ID, ROLES } from '../../data/mockData';
 import { useLongPress } from '../../hooks/useLongPress';
-import { filterText } from '../../utils/contentFilter';
 import ConfirmModal from '../Modals/ConfirmModal';
 import ActionSheet from '../Modals/ActionSheet';
 import styles from './MessageBubble.module.css';
@@ -13,35 +12,20 @@ function formatTime(date) {
   return new Date(date).toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit' });
 }
 
-function formatCountdown(unmuteAt) {
-  const secs = Math.max(0, Math.ceil((unmuteAt - Date.now()) / 1000));
-  return `禁言中 ${secs}s`;
-}
-
 export default function MessageBubble({
-  message, fontSize, onRemove, onKick, onMute, onPin, onRetry, isPinned, muteUntil,
+  message, fontSize, onRemove, onHide, onPin, onRetry, isPinned,
 }) {
-  const [showActions, setShowActions] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [showActionSheet, setShowActionSheet] = useState(false);
   const wrapperRef = useRef(null);
-
-  useEffect(() => {
-    if (!showActions) return;
-    const handler = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
-        setShowActions(false);
-      }
-    };
-    window.addEventListener('mousedown', handler);
-    return () => window.removeEventListener('mousedown', handler);
-  }, [showActions]);
 
   const user = users[message.userId];
   const isOwn = message.userId === CURRENT_USER_ID;
   const isStreamer = user?.role === ROLES.STREAMER;
   const avatarColor = AVATAR_COLORS[message.userId % AVATAR_COLORS.length];
   const avatarChar = (user?.name || '?')[0];
+
+  const iconSize = Math.round(13 * fontSize / 14);
 
   const longPress = useLongPress(() => {
     if (!message.removed && message.status !== 'pending') {
@@ -54,19 +38,19 @@ export default function MessageBubble({
     setConfirmAction({ type: 'remove' });
   };
 
-  const handleKickClick = () => {
-    setConfirmAction({ type: 'kick' });
+  const handleHideClick = () => {
+    setConfirmAction({ type: 'hide' });
   };
 
   const handleConfirm = () => {
     if (confirmAction?.type === 'remove') onRemove(message.id);
-    if (confirmAction?.type === 'kick') onKick(message.userId);
+    if (confirmAction?.type === 'hide') onHide(message.userId);
     setConfirmAction(null);
   };
 
   // ActionSheet callbacks (go through confirm for destructive)
   const handleSheetRemove = () => setConfirmAction({ type: 'remove' });
-  const handleSheetKick = () => setConfirmAction({ type: 'kick' });
+  const handleSheetHide = () => setConfirmAction({ type: 'hide' });
 
   if (message.removed) {
     return (
@@ -87,10 +71,8 @@ export default function MessageBubble({
       <div
         ref={wrapperRef}
         className={`${styles.wrapper} ${isOwn ? styles.own : ''} ${statusClass}`}
-        onClick={() => {
-          if (message.status !== 'pending') setShowActions(prev => !prev);
-        }}
         style={{ '--msg-font-size': `${fontSize}px` }}
+        onContextMenu={(e) => e.preventDefault()}
         {...longPress}
       >
         {/* Row 1: avatar + meta */}
@@ -98,57 +80,20 @@ export default function MessageBubble({
           <div className={styles.avatar} style={{ background: avatarColor }}>
             {avatarChar}
           </div>
-          <span className={`${styles.name} ${isStreamer ? styles.streamerName : ''}`}>
-            {user?.name || '未知用戶'}
-          </span>
-          {isStreamer && <span className={styles.streamerBadge}>主播</span>}
-          {muteUntil && <span className={styles.muteBadge}>{formatCountdown(muteUntil)}</span>}
-          <span className={styles.time}>{formatTime(message.timestamp)}</span>
-          {message.status === 'pending' && <span className={styles.statusLabel}>傳送中...</span>}
-          {message.status === 'failed' && <span className={styles.failLabel}>傳送失敗</span>}
+          <div className={styles.nameRow}>
+            <span className={`${styles.name} ${isStreamer ? styles.streamerName : ''}`}>
+              {user?.name || '未知用戶'}
+            </span>
+            {isStreamer && <span className={styles.streamerBadge}>主播</span>}
+            {message.status === 'pending' && <span className={styles.statusLabel}>傳送中...</span>}
+            {message.status === 'failed' && <span className={styles.failLabel}>傳送失敗</span>}
+          </div>
         </div>
 
-        {/* Row 2: actions + bubble */}
+        {/* Row 2: bubble + retry + time + actions */}
         <div className={styles.bubbleRow}>
-          {showActions && message.status !== 'pending' && (
-            <div className={styles.actions}>
-              <button
-                className={styles.actionBtn}
-                onClick={(e) => { e.stopPropagation(); onPin(message); setShowActions(false); }}
-                title={isPinned ? '取消釘選' : '釘選'}
-              >
-                {isPinned ? <PinOff size={13} /> : <Pin size={13} />}
-              </button>
-              {!isOwn && (
-                <>
-                  <button
-                    className={`${styles.actionBtn} ${styles.warn}`}
-                    onClick={(e) => { e.stopPropagation(); onMute(message.userId); setShowActions(false); }}
-                    title="禁言 60 秒"
-                  >
-                    <VolumeX size={13} />
-                  </button>
-                  <button
-                    className={`${styles.actionBtn} ${styles.danger}`}
-                    onClick={(e) => { e.stopPropagation(); handleRemoveClick(); setShowActions(false); }}
-                    title="刪除訊息"
-                  >
-                    <Trash2 size={13} />
-                  </button>
-                  <button
-                    className={`${styles.actionBtn} ${styles.danger}`}
-                    onClick={(e) => { e.stopPropagation(); handleKickClick(); setShowActions(false); }}
-                    title="踢出用戶"
-                  >
-                    <UserX size={13} />
-                  </button>
-                </>
-              )}
-            </div>
-          )}
-
           <div className={`${styles.bubble} ${isOwn ? styles.ownBubble : styles.otherBubble}`}>
-            <p className={styles.text}>{filterText(message.text)}</p>
+            <p className={styles.text}>{message.text}</p>
           </div>
 
           {message.status === 'failed' && onRetry && (
@@ -161,15 +106,51 @@ export default function MessageBubble({
               重試
             </button>
           )}
+
+          <div className={styles.timeWrapper}>
+            <span className={styles.time}>{formatTime(message.timestamp)}</span>
+          </div>
+
+          {message.status !== 'pending' && (
+            <div className={styles.actionsWrapper}>
+            <div className={styles.actions}>
+              <button
+                className={styles.actionBtn}
+                onClick={(e) => { e.stopPropagation(); onPin(message); }}
+                title={isPinned ? '取消釘選' : '釘選'}
+              >
+                {isPinned ? <PinOff size={iconSize} /> : <Pin size={iconSize} />}
+              </button>
+              {!isOwn && (
+                <>
+                  <button
+                    className={`${styles.actionBtn} ${styles.danger}`}
+                    onClick={(e) => { e.stopPropagation(); handleRemoveClick(); }}
+                    title="刪除訊息"
+                  >
+                    <Trash2 size={iconSize} />
+                  </button>
+                  <button
+                    className={`${styles.actionBtn} ${styles.danger}`}
+                    onClick={(e) => { e.stopPropagation(); handleHideClick(); }}
+                    title="隱藏用戶"
+                  >
+                    <UserX size={iconSize} />
+                  </button>
+                </>
+              )}
+            </div>
+            </div>
+          )}
         </div>
       </div>
 
       {confirmAction && (
         <ConfirmModal
-          title={confirmAction.type === 'kick' ? '踢出用戶' : '刪除訊息'}
+          title={confirmAction.type === 'hide' ? '隱藏用戶' : '刪除訊息'}
           message={
-            confirmAction.type === 'kick'
-              ? `確定要踢出「${user?.name}」嗎？該用戶所有訊息將被移除。`
+            confirmAction.type === 'hide'
+              ? `確定要隱藏「${user?.name}」嗎？\n該用戶的訊息將對所有人隱藏。`
               : '確定要刪除這則訊息嗎？'
           }
           preview={
@@ -190,8 +171,7 @@ export default function MessageBubble({
           isOwn={isOwn}
           onPin={onPin}
           onRemove={handleSheetRemove}
-          onKick={handleSheetKick}
-          onMute={onMute}
+          onHide={handleSheetHide}
           onClose={() => setShowActionSheet(false)}
         />
       )}

@@ -9,14 +9,24 @@ import Sidebar from './components/Sidebar/Sidebar';
 import PinnedMessage from './components/Chat/PinnedMessage';
 import ChatArea from './components/Chat/ChatArea';
 import MessageInput from './components/Controls/MessageInput';
-import ConfirmModal from './components/Modals/ConfirmModal';
-import { randomMessages, reconnectMessages, nextMsgId } from './data/mockData';
+import LogsPanel from './components/Admin/LogsPanel';
+import { randomMessages, reconnectMessages, nextMsgId, streams } from './data/mockData';
 import styles from './App.module.css';
 
-function LiveApp() {
-  const { addMessage, appendReconnectMessages, setIsSyncing, pinMessage, pinnedMessage } = useChat();
-  const [showEndModal, setShowEndModal] = useState(false);
+function LiveApp({ onLogout }) {
+  const { addMessage, appendReconnectMessages, setIsSyncing, pinMessage, pinnedMessage, fontSize, adminLogs, resetMessages } = useChat();
   const [sidebarForceOpen, setSidebarForceOpen] = useState(false);
+  const [sidebarMenuHover, setSidebarMenuHover] = useState(false);
+  const [showLogsPanel, setShowLogsPanel] = useState(false);
+  const [currentStream, setCurrentStream] = useState(() => {
+    // Default to first live stream found
+    for (const appStreams of Object.values(streams)) {
+      const live = appStreams.find(s => s.live);
+      if (live) return live;
+    }
+    return null;
+  });
+  const lastSeenLogsCount = useRef(0);
   const msgIndexRef = useRef(0);
   const ping = usePing();
 
@@ -51,6 +61,12 @@ function LiveApp() {
     };
   }, []);
 
+  const handleSelectStream = useCallback((stream) => {
+    setCurrentStream(stream);
+    resetMessages();
+    setSidebarForceOpen(false);
+  }, [resetMessages]);
+
   const handleReconnect = useCallback(() => {
     setIsSyncing(true);
     setTimeout(() => {
@@ -63,20 +79,35 @@ function LiveApp() {
   const networkStatus = useNetworkStatus(handleReconnect);
 
   return (
-    <div className={styles.app}>
+    <div className={styles.app} style={{ '--font-scale': fontSize / 14 }}>
       <div className={styles.topBar}>
         <NetworkStatus status={networkStatus} />
         <Header
-          onEndLive={() => setShowEndModal(true)}
           onToggleSidebar={() => setSidebarForceOpen(p => !p)}
+          onMenuMouseEnter={() => setSidebarMenuHover(true)}
+          onMenuMouseLeave={() => setSidebarMenuHover(false)}
+          onLogout={onLogout}
           ping={ping}
+          currentStream={currentStream}
+          showLogsPanel={showLogsPanel}
+          unreadLogsCount={showLogsPanel ? 0 : adminLogs.length - lastSeenLogsCount.current}
+          onToggleLogs={() => {
+            setShowLogsPanel(p => {
+              if (!p) lastSeenLogsCount.current = adminLogs.length;
+              return !p;
+            });
+          }}
         />
       </div>
 
       <div className={styles.body}>
         <Sidebar
           forceOpen={sidebarForceOpen}
+          menuHover={sidebarMenuHover}
           onOverlayClick={() => setSidebarForceOpen(false)}
+          onSelectStream={handleSelectStream}
+          currentStreamId={currentStream?.id}
+          onLogout={onLogout}
         />
 
         <main className={styles.main}>
@@ -89,26 +120,18 @@ function LiveApp() {
           <ChatArea />
           <MessageInput networkStatus={networkStatus} />
         </main>
+
+        {showLogsPanel && <LogsPanel onClose={() => setShowLogsPanel(false)} />}
       </div>
 
-      {showEndModal && (
-        <ConfirmModal
-          title="關閉直播"
-          message="確定要關閉直播嗎？關閉後觀眾將無法繼續收看。"
-          onConfirm={() => setShowEndModal(false)}
-          onCancel={() => setShowEndModal(false)}
-        />
-      )}
     </div>
   );
 }
 
-export default function App() {
+export default function App({ onLogout }) {
   return (
-    <ThemeProvider>
-      <ChatProvider>
-        <LiveApp />
-      </ChatProvider>
-    </ThemeProvider>
+    <ChatProvider>
+      <LiveApp onLogout={onLogout} />
+    </ChatProvider>
   );
 }

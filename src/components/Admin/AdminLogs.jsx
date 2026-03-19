@@ -3,20 +3,20 @@ import styles from './AdminLogs.module.css';
 
 const ACTION_LABELS = {
   remove: '刪除訊息',
-  kick: '踢出用戶',
-  mute: '禁言',
+  hide: '隱藏用戶',
 };
 
-export default function AdminLogs() {
+export default function AdminLogs({ filter = 'all' }) {
   const { adminLogs } = useChat();
+  const filtered = filter === 'all' ? adminLogs : adminLogs.filter(log => log.action === filter);
 
-  if (adminLogs.length === 0) {
-    return <div className={styles.empty}>尚無管理記錄</div>;
+  if (filtered.length === 0) {
+    return <div className={styles.empty}>{adminLogs.length === 0 ? '尚無管理記錄' : '此類別尚無紀錄'}</div>;
   }
 
   return (
     <div className={styles.list}>
-      {adminLogs.map(log => (
+      {filtered.map(log => (
         <div key={log.id} className={`${styles.entry} ${styles[log.action]}`}>
           <div className={styles.top}>
             <span className={`${styles.badge} ${styles[log.action]}`}>
@@ -27,10 +27,12 @@ export default function AdminLogs() {
             </span>
           </div>
           <div className={styles.detail}>
-            <span className={styles.actor}>{log.actorName}</span>
-            <span className={styles.arrow}>→</span>
-            <span className={styles.target}>{log.targetName}</span>
-            {log.detail && <span className={styles.extra}>（{log.detail}）</span>}
+            <div className={styles.detailRow}>
+              <span className={styles.actor}>{log.actorName}</span>
+              <span className={styles.arrow}>→</span>
+              <span className={styles.target}>{log.targetName}</span>
+            </div>
+            {log.detail && <span className={styles.extra}>「{log.detail}」</span>}
           </div>
         </div>
       ))}

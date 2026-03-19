@@ -30,9 +30,7 @@
 }
 
 @media (max-width: 768px) {
-  /* On mobile, the send button is in the bottom-right via MessageInput layout */
-  .main {
-    /* Ensure content doesn't go under system UI */
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+  .topBar {
+    padding-top: env(safe-area-inset-top, 0px);
   }
 }

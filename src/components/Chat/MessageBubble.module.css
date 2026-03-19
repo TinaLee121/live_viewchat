@@ -47,14 +47,20 @@
   flex-direction: row-reverse;
 }
 
+.nameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .avatar {
-  width: 24px;
-  height: 24px;
+  width: calc(24px * var(--font-scale, 1));
+  height: calc(24px * var(--font-scale, 1));
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: calc(11px * var(--font-scale, 1));
   font-weight: 700;
   color: #fff;
   flex-shrink: 0;
@@ -62,7 +68,7 @@
 }
 
 .name {
-  font-size: 12px;
+  font-size: calc(12px * var(--font-scale, 1));
   font-weight: 700;
   color: var(--text-secondary);
   line-height: 1;
@@ -73,7 +79,7 @@
 }
 
 .streamerBadge {
-  font-size: 10px;
+  font-size: calc(10px * var(--font-scale, 1));
   font-weight: 700;
   padding: 1px 5px;
   border-radius: 3px;
@@ -93,9 +99,18 @@
   line-height: 1.4;
 }
 
+.timeWrapper {
+  display: flex;
+  align-items: flex-end;
+  align-self: stretch;
+  padding-bottom: 8px;
+}
+
 .time {
-  font-size: 11px;
+  font-size: calc(11px * var(--font-scale, 1));
   color: var(--text-muted);
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .statusLabel {
@@ -116,10 +131,13 @@
   align-items: flex-end;
   gap: 6px;
   max-width: 78%;
+  margin-left: calc(30px * var(--font-scale, 1));
 }
 
 .own .bubbleRow {
   flex-direction: row-reverse;
+  margin-left: 0;
+  margin-right: calc(30px * var(--font-scale, 1));
 }
 
 .bubble {
@@ -149,7 +167,14 @@
   color: #fff;
 }
 
-/* Actions (hover) */
+/* Actions: always in DOM to avoid layout shift, shown on row hover */
+.actionsWrapper {
+  display: flex;
+  align-items: flex-end;
+  align-self: stretch;
+  padding-bottom: 8px;
+}
+
 .actions {
   display: flex;
   align-items: center;
@@ -159,7 +184,18 @@
   border-radius: 6px;
   padding: 2px 4px;
   flex-shrink: 0;
-  animation: fadeIn 0.15s ease;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s;
+}
+
+@media (hover: hover) {
+  .wrapper:hover .actions {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
 }
 
 @keyframes fadeIn {
@@ -171,8 +207,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: calc(24px * var(--font-scale, 1));
+  height: calc(24px * var(--font-scale, 1));
   border-radius: 4px;
   color: var(--text-secondary);
   transition: background 0.15s, color 0.15s;

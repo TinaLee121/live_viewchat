@@ -8,7 +8,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  height: 52px;
+  min-height: 52px;
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -20,6 +20,8 @@
   align-items: center;
   gap: 12px;
   min-width: 0;
+  overflow: hidden;
+  flex: 1;
 }
 
 .right {
@@ -30,14 +32,19 @@
 }
 
 .menuBtn {
-  display: none;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: calc(34px * var(--font-scale, 1));
+  height: calc(34px * var(--font-scale, 1));
   border-radius: 6px;
   color: var(--text-secondary);
   transition: background 0.15s, color 0.15s;
+}
+
+.menuBtn svg {
+  width: calc(20px * var(--font-scale, 1));
+  height: calc(20px * var(--font-scale, 1));
 }
 
 .menuBtn:hover {
@@ -51,37 +58,46 @@
   }
 }
 
-.liveBadge {
+@media (max-width: 768px) {
+  .header {
+    background: rgba(var(--bg-secondary-rgb, 19, 21, 31), 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  .right {
+    gap: 2px;
+  }
+
+  .menuBtn,
+  .iconBtn {
+    min-width: unset;
+    min-height: 44px;
+    padding: 0 10px;
+  }
+}
+
+
+.titleGroup {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--error-color);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 12px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.liveDot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--error-color);
-  animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.3; }
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .title {
-  font-size: 15px;
+  font-size: calc(15px * var(--font-scale, 1));
   font-weight: 600;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.streamTitle {
+  font-size: calc(11px * var(--font-scale, 1));
+  color: var(--text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -91,11 +107,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: calc(34px * var(--font-scale, 1));
+  height: calc(34px * var(--font-scale, 1));
   border-radius: 6px;
   color: var(--text-secondary);
   transition: background 0.15s, color 0.15s;
+}
+
+.iconBtn svg {
+  width: calc(18px * var(--font-scale, 1));
+  height: calc(18px * var(--font-scale, 1));
 }
 
 .iconBtn:hover {
@@ -108,23 +129,25 @@
   color: var(--accent-streamer);
 }
 
-.endLiveBtn {
+.logoutBtn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 6px 14px;
-  background: rgba(239, 68, 68, 0.15);
-  color: var(--error-color);
-  border: 1px solid rgba(239, 68, 68, 0.4);
+  padding: 6px 10px;
   border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  transition: background 0.15s, border-color 0.15s;
+  font-size: calc(13px * var(--font-scale, 1));
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
 }
 
-.endLiveBtn:hover {
-  background: rgba(239, 68, 68, 0.3);
-  border-color: rgba(239, 68, 68, 0.6);
+.logoutBtn svg {
+  width: calc(16px * var(--font-scale, 1));
+  height: calc(16px * var(--font-scale, 1));
+}
+
+.logoutBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 /* Ping indicator */
@@ -152,6 +175,65 @@
 .pingBad .pingDot { background: var(--ping-bad); }
 .pingBad .pingMs { color: var(--ping-bad); }
 
+/* Font size button */
+.fontBtn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  height: calc(34px * var(--font-scale, 1));
+  border-radius: 6px;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.fontBtn svg {
+  width: calc(18px * var(--font-scale, 1));
+  height: calc(18px * var(--font-scale, 1));
+  flex-shrink: 0;
+}
+
+.fontBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.fontBtn.active {
+  background: var(--bg-hover);
+  color: var(--accent-streamer);
+}
+
+.fontSizeLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: inherit;
+  line-height: 1;
+  min-width: 14px;
+}
+
+/* Logs button badge */
+.logsBtnWrapper {
+  position: relative;
+  display: flex;
+}
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 3px;
+  border-radius: 8px;
+  background: var(--error-color);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 16px;
+  text-align: center;
+  pointer-events: none;
+}
+
 /* Settings dropdown panel */
 .settingsPanel {
   position: absolute;
@@ -170,4 +252,10 @@
 @keyframes fadeDown {
   from { opacity: 0; transform: translateY(-6px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .logoutBtn {
+    display: none;
+  }
 }

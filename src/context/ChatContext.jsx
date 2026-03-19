@@ -9,9 +9,8 @@ const TRIM_COUNT = 100;
 export function ChatProvider({ children }) {
   const [messages, setMessages] = useState(initialMessages);
   const [pinnedMessage, setPinnedMessage] = useState(null);
-  const [fontSize, setFontSize] = useState(14);
+  const [fontSize, setFontSize] = useState(16);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [mutedUsers, setMutedUsers] = useState({});   // { [userId]: unmuteTimestamp }
   const [adminLogs, setAdminLogs] = useState([]);
 
   // --- Batching state ---
@@ -110,29 +109,13 @@ export function ChatProvider({ children }) {
     }
   }, [messages, addLog]);
 
-  const kickUser = useCallback((userId) => {
+  const hideUser = useCallback((userId) => {
     setMessages(prev =>
-      prev.map(m => m.userId === userId ? { ...m, removed: true } : m)
+      prev.map(m => m.userId === userId ? { ...m, hidden: true } : m)
     );
     setPinnedMessage(prev => prev?.userId === userId ? null : prev);
     const target = users[userId];
-    addLog({ action: 'kick', targetName: target?.name || '未知', detail: '' });
-  }, [addLog]);
-
-  const muteUser = useCallback((userId, durationMs = 60000) => {
-    const unmuteAt = Date.now() + durationMs;
-    setMutedUsers(prev => ({ ...prev, [userId]: unmuteAt }));
-    const target = users[userId];
-    addLog({ action: 'mute', targetName: target?.name || '未知', detail: `${durationMs / 1000}秒` });
-    setTimeout(() => {
-      setMutedUsers(prev => {
-        const next = { ...prev };
-        if (next[userId] && next[userId] <= Date.now() + 100) {
-          delete next[userId];
-        }
-        return next;
-      });
-    }, durationMs);
+    addLog({ action: 'hide', targetName: target?.name || '未知', detail: '' });
   }, [addLog]);
 
   const pinMessage = useCallback((msg) => {
@@ -156,6 +139,12 @@ export function ChatProvider({ children }) {
     );
   }, []);
 
+  const resetMessages = useCallback(() => {
+    setMessages(initialMessages);
+    setPinnedMessage(null);
+    setAdminLogs([]);
+  }, []);
+
   return (
     <ChatContext.Provider value={{
       messages,
@@ -164,18 +153,17 @@ export function ChatProvider({ children }) {
       setFontSize,
       isSyncing,
       setIsSyncing,
-      mutedUsers,
       adminLogs,
       addMessage,
       sendMessage,
       retryMessage,
       removeMessage,
-      kickUser,
-      muteUser,
+      hideUser,
       pinMessage,
       prependMessages,
       appendReconnectMessages,
       trimOldMessages,
+      resetMessages,
     }}>
       {children}
     </ChatContext.Provider>

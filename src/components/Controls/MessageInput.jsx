@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Send } from 'lucide-react';
 import { useChat } from '../../context/ChatContext';
 import styles from './MessageInput.module.css';
@@ -10,6 +10,14 @@ export default function MessageInput({ networkStatus }) {
   const [text, setText] = useState(() => localStorage.getItem(DRAFT_KEY) || '');
   const [failMsg, setFailMsg] = useState(false);
   const textareaRef = useRef(null);
+  const failTimerRef = useRef(null);
+
+  useEffect(() => {
+    if (failMsg) {
+      failTimerRef.current = setTimeout(() => setFailMsg(false), 4000);
+    }
+    return () => clearTimeout(failTimerRef.current);
+  }, [failMsg]);
 
   const isOffline = networkStatus === 'offline';
 

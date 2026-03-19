@@ -1,7 +1,7 @@
-import { Pin, PinOff, Trash2, UserX, VolumeX } from 'lucide-react';
+import { Pin, PinOff, Trash2, UserX } from 'lucide-react';
 import styles from './ActionSheet.module.css';
 
-export default function ActionSheet({ message, user, isPinned, isOwn, onPin, onRemove, onKick, onMute, onClose }) {
+export default function ActionSheet({ message, user, isPinned, isOwn, onPin, onRemove, onHide, onClose }) {
   const handle = (fn) => () => { fn(); onClose(); };
 
   return (
@@ -19,17 +19,13 @@ export default function ActionSheet({ message, user, isPinned, isOwn, onPin, onR
           </button>
           {!isOwn && (
             <>
-              <button className={`${styles.actionBtn} ${styles.warn}`} onClick={handle(() => onMute(message.userId))}>
-                <VolumeX size={18} />
-                <span>禁言 60 秒</span>
-              </button>
               <button className={`${styles.actionBtn} ${styles.danger}`} onClick={handle(() => onRemove(message))}>
                 <Trash2 size={18} />
                 <span>刪除訊息</span>
               </button>
-              <button className={`${styles.actionBtn} ${styles.danger}`} onClick={handle(() => onKick(message))}>
+              <button className={`${styles.actionBtn} ${styles.danger}`} onClick={handle(() => onHide(message))}>
                 <UserX size={18} />
-                <span>踢出用戶</span>
+                <span>隱藏用戶</span>
               </button>
             </>
           )}

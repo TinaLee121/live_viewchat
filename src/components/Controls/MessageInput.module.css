@@ -5,8 +5,7 @@
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
   flex-shrink: 0;
-  /* Keyboard avoidance: env variable fallback */
-  padding-bottom: max(10px, env(keyboard-inset-height, 0px));
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
 }
 
 .failNotice {
@@ -78,14 +77,14 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: var(--accent-streamer);
+  background: #E8001C;
   color: #fff;
   flex-shrink: 0;
   transition: background 0.15s, transform 0.1s, opacity 0.15s;
 }
 
 .sendBtn:hover:not(:disabled) {
-  background: #3b82f6;
+  background: #c8001a;
   transform: scale(1.05);
 }
 
@@ -94,10 +93,21 @@
   cursor: not-allowed;
 }
 
-/* Mobile thumb zone: send button naturally at bottom-right */
 @media (max-width: 768px) {
+  .wrapper {
+    background: rgba(var(--bg-secondary-rgb, 19, 21, 31), 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
   .sendBtn {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+  }
+
+  .textarea {
+    border-radius: 12px;
+    font-size: 16px;
   }
 }

@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { ChevronRight } from 'lucide-react';
-import { apps } from '../../data/mockData';
+import { apps, streams } from '../../data/mockData';
 import StreamList from './StreamList';
 import styles from './AppList.module.css';
 
-export default function AppList() {
+export default function AppList({ onSelectStream, currentStreamId }) {
   const [expandedApp, setExpandedApp] = useState(null);
 
   const toggle = (id) => setExpandedApp(prev => prev === id ? null : id);
 
   return (
     <div className={styles.list}>
-      <div className={styles.sectionLabel}>應用程式</div>
       {apps.map(app => (
         <div key={app.id}>
           <button
@@ -23,8 +22,17 @@ export default function AppList() {
               className={`${styles.chevron} ${expandedApp === app.id ? styles.open : ''}`}
             />
             <span className={styles.appName}>{app.name}</span>
+            {streams[app.id]?.some(s => s.live) && (
+              <span className={styles.liveBadge}>LIVE</span>
+            )}
           </button>
-          {expandedApp === app.id && <StreamList appId={app.id} />}
+          {expandedApp === app.id && (
+            <StreamList
+              appId={app.id}
+              onSelectStream={onSelectStream}
+              currentStreamId={currentStreamId}
+            />
+          )}
         </div>
       ))}
     </div>

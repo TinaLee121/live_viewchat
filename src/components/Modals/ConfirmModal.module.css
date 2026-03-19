@@ -1,7 +1,9 @@
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -18,7 +20,7 @@
 .modal {
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 16px;
   padding: 28px 24px 24px;
   max-width: 380px;
   width: 100%;
@@ -26,12 +28,28 @@
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  animation: slideUp 0.25s ease;
+  animation: slideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 @keyframes slideUp {
-  from { transform: translateY(20px); opacity: 0; }
+  from { transform: translateY(24px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes sheetUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .overlay {
+    align-items: center;
+    padding: 24px;
+  }
+
+  .modal {
+    max-width: 100%;
+  }
 }
 
 .icon {
@@ -50,6 +68,7 @@
   color: var(--text-secondary);
   text-align: center;
   line-height: 1.6;
+  white-space: pre-line;
 }
 
 .actions {
@@ -62,8 +81,9 @@
 .cancelBtn {
   flex: 1;
   padding: 10px;
+  min-height: 44px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-secondary);
@@ -84,15 +104,16 @@
   border-radius: 6px;
   font-size: 13px;
   color: var(--text-secondary);
-  text-align: left;
+  text-align: center;
   word-break: break-all;
 }
 
 .confirmBtn {
   flex: 1;
   padding: 10px;
+  min-height: 44px;
   background: var(--error-color);
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 14px;
   font-weight: 600;
   color: #fff;

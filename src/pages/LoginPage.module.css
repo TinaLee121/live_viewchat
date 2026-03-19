@@ -1,0 +1,109 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-primary);
+  position: relative;
+}
+
+.themeBtn {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.themeBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-top: 4px solid #E8001C;
+  border-radius: 16px;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(232, 0, 28, 0.08), 0 4px 24px rgba(232, 0, 28, 0.08);
+}
+
+.logo {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  margin-bottom: 8px;
+}
+
+.logoC {
+  font-size: 36px;
+  font-weight: 800;
+  color: #E8001C;
+  line-height: 1;
+}
+
+.logoMoney {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+  text-align: center;
+}
+
+.loginBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 13px 20px;
+  background: #E8001C;
+  color: #fff;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  transition: opacity 0.15s, transform 0.15s;
+}
+
+.loginBtn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.loginBtn:active {
+  transform: translateY(0);
+}
+
+.hint {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+  text-align: center;
+  line-height: 1.5;
+}

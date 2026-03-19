@@ -29,14 +29,14 @@
 }
 
 .name {
-  font-size: 12px;
+  font-size: calc(12px * var(--font-scale, 1));
   font-weight: 600;
   color: var(--pinned-border);
   flex-shrink: 0;
 }
 
 .text {
-  font-size: 13px;
+  font-size: calc(13px * var(--font-scale, 1));
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
